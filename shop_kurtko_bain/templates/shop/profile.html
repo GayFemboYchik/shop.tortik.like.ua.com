@@ -1,0 +1,15 @@
+<h2>Мій уставший профіль</h2>
+
+<p>Ім'я: {{ client.first_name }}</p>
+<p>Прізвище: {{ client.last_name }}</p>
+<p>Email: {{ client.email }}</p>
+<p>Телефон: {{ client.phone }}</p>
+
+<h3>Мої замовлення</h3>
+
+{% for order in orders %}
+    <p>
+        Замовлення №{{ order.id }} —
+        статус: {{ order.get_status_display }}
+    </p>
+{% endfor %}
