@@ -53,6 +53,10 @@ class Order(models.Model):
         ('completed', 'Виконано'),      # замовлення виконано / доставлено
     ]
 
+    @property
+    def total_price(self):
+        return sum(item.total_price for item in self.items.all())
+
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(
@@ -65,6 +69,10 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
+
+    @property
+    def total_price(self):
+        return sum(item.total_price for item in self.items.all())
 
 
 
