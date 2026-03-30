@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<ul>
+    {% for instrument in instruments %}
+        <li>{{ instrument }}</li>
+    {% empty %}
+        <li>Сайт устал</li>
+    {% endfor %}
+</ul>
+
+</body>
+</html>
