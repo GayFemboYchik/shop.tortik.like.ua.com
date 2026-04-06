@@ -25,9 +25,9 @@
         <button type="submit">Додати в кошик</button>
     </form>
     {% else %}
-    <p>Будь ласка, <a href="{% url 'login' %}">увійдіть</a>, щоб додати товар у кошик.</p>
+    <p>Будь ласка, <a href="{% url 'instrument_shop:login' %}">увійдіть</a>, щоб додати товар у кошик.</p>
     {% endif %}
 </div>
 
-<a href="{% url 'shop:instrument_list' %}">← Повернутися до списку інструментів</a>
+<a href="{% url 'instrument_shop:instrument_list' %}">← Повернутися до списку інструментів</a>
 {% endblock %}

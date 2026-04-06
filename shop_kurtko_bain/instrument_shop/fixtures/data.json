@@ -1,54 +1,62 @@
 [
   {
-    "model": "instrument_shop.client",
+    "model": "auth.user",
     "pk": 1,
     "fields": {
       "username": "anna",
       "email": "anna@gmail.com",
-      "phone": "+380931111111",
       "is_active": true,
       "password": "pbkdf2_sha256$260000$fake$hash"
     }
   },
   {
-    "model": "instrument_shop.client",
+    "model": "auth.user",
     "pk": 2,
     "fields": {
       "username": "oleg",
       "email": "oleg@gmail.com",
-      "phone": "+380932222222",
       "is_active": true,
       "password": "pbkdf2_sha256$260000$fake$hash"
     }
   },
-
   {
     "model": "instrument_shop.category",
     "pk": 1,
-    "fields": { "title": "Струнні" }
+    "fields": {
+      "title": "Струнні"
+    }
   },
   {
     "model": "instrument_shop.category",
     "pk": 2,
-    "fields": { "title": "Клавішні" }
+    "fields": {
+      "title": "Клавішні"
+    }
   },
-
   {
     "model": "instrument_shop.subcategory",
     "pk": 1,
-    "fields": { "title": "Електрогітари", "category": 1 }
+    "fields": {
+      "title": "Електрогітари",
+      "category": 1
+    }
   },
   {
     "model": "instrument_shop.subcategory",
     "pk": 2,
-    "fields": { "title": "Акустичні гітари", "category": 1 }
+    "fields": {
+      "title": "Акустичні гітари",
+      "category": 1
+    }
   },
   {
     "model": "instrument_shop.subcategory",
     "pk": 3,
-    "fields": { "title": "Піаніно", "category": 2 }
+    "fields": {
+      "title": "Піаніно",
+      "category": 2
+    }
   },
-
   {
     "model": "instrument_shop.instrument",
     "pk": 1,
@@ -101,13 +109,13 @@
       "slug": "casio-px-770"
     }
   },
-
   {
     "model": "instrument_shop.order",
     "pk": 1,
     "fields": {
       "client": 1,
-      "status": "completed"
+      "status": "completed",
+      "created_at": "2026-03-30T12:00:00Z"
     }
   },
   {
@@ -115,7 +123,8 @@
     "pk": 2,
     "fields": {
       "client": 1,
-      "status": "processing"
+      "status": "processing",
+      "created_at": "2026-03-30T12:00:00Z"
     }
   },
   {
@@ -123,7 +132,8 @@
     "pk": 3,
     "fields": {
       "client": 2,
-      "status": "confirmed"
+      "status": "confirmed",
+      "created_at": "2026-03-30T12:00:00Z"
     }
   },
   {
@@ -131,10 +141,10 @@
     "pk": 4,
     "fields": {
       "client": 2,
-      "status": "cart"
+      "status": "cart",
+      "created_at": "2026-03-30T12:00:00Z"
     }
   },
-
   {
     "model": "instrument_shop.orderitem",
     "pk": 1,
@@ -153,7 +163,6 @@
       "quantity": 2
     }
   },
-
   {
     "model": "instrument_shop.orderitem",
     "pk": 3,
@@ -163,7 +172,6 @@
       "quantity": 1
     }
   },
-
   {
     "model": "instrument_shop.orderitem",
     "pk": 4,
@@ -173,7 +181,6 @@
       "quantity": 1
     }
   },
-
   {
     "model": "instrument_shop.orderitem",
     "pk": 5,

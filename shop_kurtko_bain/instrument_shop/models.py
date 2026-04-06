@@ -1,13 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
-
-class Client(AbstractUser):
-    email = models.EmailField()
-    phone = models.CharField(max_length=20, blank=True)
-
-
-    def __str__(self):
-        return self.username
+from django.contrib.auth.models import User
 
 
 # Create your models here.
@@ -16,14 +8,13 @@ class Category(models.Model):
     def __str__(self):
         return self.title
 
+
 class Subcategory(models.Model):
     title = models.CharField(max_length=200)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
-
-from django.utils.text import slugify
 
 from django.utils.text import slugify
 
@@ -57,7 +48,7 @@ class Order(models.Model):
     def total_price(self):
         return sum(item.total_price for item in self.items.all())
 
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    client = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(
         max_length=20,
