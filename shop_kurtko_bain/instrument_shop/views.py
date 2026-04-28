@@ -6,7 +6,9 @@ from .models import *
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
-
+from django.contrib.auth.views import LoginView, LogoutView
+from django.views.generic import CreateView
+from django.contrib.auth.forms import UserCreationForm
 
 
 
@@ -107,24 +109,24 @@ class ProfileView(LoginRequiredMixin, ListView):
         context['client'] = self.request.user
         return context
 
-from django.contrib.auth.views import LoginView, LogoutView
-from django.views.generic import CreateView
+
 
 class CustomLoginView(LoginView):
-    template_name = "tasks/login.html"
+    template_name = "shop/login.html"
     redirect_authenticated_user = True
 
 
 class CustomLogoutView(LogoutView):
-    next_page = "tasks:login"
+    next_page = "instrument_shop:login"
 
 
 class RegisterView(CreateView):
-    template_name = "tasks/register.html"
-    # form_class = UserCreationForm
+    template_name = "shop/register.html"
+    form_class = UserCreationForm
 
     def form_valid(self, form):
         user = form.save()
         login(self.request, user)
-        return redirect(reverse_lazy("tasks:login"))
+        return redirect(reverse_lazy("instrument_shop:login"))
+
 
