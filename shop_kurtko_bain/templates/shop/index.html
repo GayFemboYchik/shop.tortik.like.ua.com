@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="instrument-grid">
+    {% for instrument in recommended_instruments %}
+        <div class="card">
+            {% if instrument.image %}
+                <img src="{{ instrument.image.url }}" alt="{{ instrument.title }}">
+            {% else %}
+                <img src="/static/images/no-photo.png" alt="Немає фото">
+            {% endif %}
+
+            <h3>{{ instrument.title }}</h3>
+            <p class="category">{{ instrument.subcategory.category.title }} / {{ instrument.subcategory.title }}</p>
+            <p class="price">{{ instrument.price }} грн</p>
+
+            {% if instrument.in_stock > 0 %}
+                <span class="badge">В наявності ({{ instrument.in_stock }})</span>
+            {% else %}
+                <span class="badge out">Немає в наявності</span>
+            {% endif %}
+
+            <a href="{% url 'instrument_shop:instrument_detail' instrument.slug %}" class="btn">Переглянути</a>
+        </div>
+    {% empty %}
+        <p>Наразі немає рекомендованих товарів.</p>
+    {% endfor %}
+</div>
+
+ {% endblock %}

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
 
+{% block content %}
 <h2>Ваш кошик</h2>
 
 {% if items %}
@@ -36,9 +37,12 @@
     {% endfor %}
 </table>
 
-<h3>Всього: {{ total }}</h3>
-<a href="{% url 'checkout' %}">Оформити замовлення</a>
+<form action="{% url 'instrument_shop:checkout' %}" method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-success">Оформити замовлення</button>
+</form>
 
 {% else %}
 <p>Кошик порожній</p>
 {% endif %}
+ {% endblock %}

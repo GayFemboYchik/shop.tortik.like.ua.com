@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView
 from .models import *
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 from django.contrib.auth.views import LoginView, LogoutView
@@ -11,24 +11,54 @@ from django.views.generic import CreateView
 from django.contrib.auth.forms import UserCreationForm
 
 
+class IndexView(ListView):
+    model = Instrument
+    template_name = 'shop/index.html'
+    context_object_name = 'recommended_instruments'
+
+    def get_queryset(self):
+        # Отримуємо 10 випадкових товарів
+        return Instrument.objects.order_by('?')[:10]
+
+
+class CategoryListView(ListView):
+    model = Category
+    template_name = 'shop/category_list.html'  # Перевірте шлях до вашої папки з шаблонами
+    context_object_name = 'categories'
+
 
 class InstrumentListView(ListView):
     model = Instrument
     template_name = "shop/instrument_list.html"
     context_object_name = "instruments"
+    paginate_by = 12  # Додамо пагінацію для зручності
 
     def get_queryset(self):
         queryset = Instrument.objects.all()
-        subcategory_id = self.request.GET.get('subcategory')
-        category_id = self.request.GET.get('category')
 
-        if category_id:
-            queryset = queryset.filter(subcategory__category_id=category_id)
+        # Отримуємо слаги з URL
+        category_slug = self.kwargs.get('category_slug')
+        subcategory_slug = self.kwargs.get('subcategory_slug')
 
-        if subcategory_id:
-            queryset = queryset.filter(subcategory_id=subcategory_id)
+        if subcategory_slug:
+            # Фільтруємо за підкатегорією
+            queryset = queryset.filter(subcategory__slug=subcategory_slug)
+        elif category_slug:
+            # Фільтруємо за головною категорією
+            queryset = queryset.filter(subcategory__category__slug=category_slug)
 
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Передаємо активну категорію в шаблон для заголовків
+        if self.kwargs.get('subcategory_slug'):
+            context['current_title'] = get_object_or_404(Subcategory, slug=self.kwargs['subcategory_slug']).title
+        elif self.kwargs.get('category_slug'):
+            context['current_title'] = get_object_or_404(Category, slug=self.kwargs['category_slug']).title
+        else:
+            context['current_title'] = "Всі товари"
+        return context
 
 
 class InstrumentDetailView(DetailView):
@@ -59,7 +89,6 @@ class InstrumentDetailView(DetailView):
             order_item.save()
 
         return redirect(request.path)
-
 
 
 class CartView(LoginRequiredMixin, View):
@@ -96,6 +125,7 @@ class CartView(LoginRequiredMixin, View):
 
         return redirect('cart')  # після дії оновлюємо сторінку кошика
 
+
 class ProfileView(LoginRequiredMixin, ListView):
     model = Order
     template_name = 'shop/profile.html'
@@ -108,7 +138,6 @@ class ProfileView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['client'] = self.request.user
         return context
-
 
 
 class CustomLoginView(LoginView):
@@ -130,3 +159,29 @@ class RegisterView(CreateView):
         return redirect(reverse_lazy("instrument_shop:login"))
 
 
+class CheckoutView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        # Шукаємо замовлення користувача, яке зараз має статус 'cart'
+        order = get_object_or_404(Order, client=request.user, status='cart')
+
+        if order.items.exists():
+            # Змінюємо статус на 'processing' (Обробляється)
+            order.status = 'processing'
+            order.save()
+            # Тут можна додати логіку зменшення кількості товару на складі (in_stock), якщо потрібно
+
+            # Після оформлення перенаправляємо на головну або сторінку "Дякуємо"
+            return redirect('instrument_shop:index')
+
+            # Якщо кошик був порожній, просто повертаємо назад
+        return redirect('instrument_shop:cart')
+
+
+class OrderListView(LoginRequiredMixin, ListView):
+    model = Order
+    template_name = 'shop/order_list.html'
+    context_object_name = 'orders'
+
+    def get_queryset(self):
+        # Повертаємо замовлення поточного користувача, які вже в обробці або виконані
+        return Order.objects.filter(client=self.request.user).exclude(status='cart').order_by('-created_at')

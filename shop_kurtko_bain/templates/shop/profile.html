@@ -1,3 +1,8 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+
 <h2>Мій уставший профіль</h2>
 
 <p>Ім'я: {{ client.first_name }}</p>
@@ -13,3 +18,4 @@
         статус: {{ order.get_status_display }}
     </p>
 {% endfor %}
+{% endblock %}

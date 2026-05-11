@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Категорії інструментів</h2>
+    <div class="row">
+        {% for category in categories %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <!-- Посилання на всю категорію -->
+                <h5 class="card-title">
+                    <a href="{% url 'instrument_shop:category_instruments' category.slug %}">
+                        {{ category.title }}
+                    </a>
+                </h5>
+
+                <ul class="list-unstyled">
+                    {% for sub in category.subcategory_set.all %}
+                    <li>
+                        <!-- Посилання на підкатегорію -->
+                        <a href="{% url 'instrument_shop:subcategory_instruments' sub.slug %}" class="text-decoration-none text-muted">
+                            — {{ sub.title }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                </div>
+                <div class="card-footer bg-white border-0">
+                    <a href="#" class="btn btn-outline-dark btn-sm w-100">Дивитися все</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

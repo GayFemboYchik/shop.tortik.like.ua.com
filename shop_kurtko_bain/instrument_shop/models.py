@@ -1,10 +1,19 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.text import slugify
 
 
 # Create your models here.
 class Category(models.Model):
     title = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True, blank=True, null=True)  # Додайте це
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            from django.utils.text import slugify
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.title
 
@@ -12,11 +21,14 @@ class Category(models.Model):
 class Subcategory(models.Model):
     title = models.CharField(max_length=200)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    slug = models.SlugField(unique=True, blank=True, null=True)  # І це теж
 
-    def __str__(self):
-        return self.title
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            from django.utils.text import slugify
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
 
-from django.utils.text import slugify
 
 class Instrument(models.Model):
     title = models.CharField(max_length=200)
@@ -38,10 +50,10 @@ class Instrument(models.Model):
 
 class Order(models.Model):
     STATUS_CHOICES = [
-        ('cart', 'У кошику'),          # товар ще у кошику, не оформлено
-        ('processing', 'Обробляється'), # замовлення прийнято, йде обробка
+        ('cart', 'У кошику'),  # товар ще у кошику, не оформлено
+        ('processing', 'Обробляється'),  # замовлення прийнято, йде обробка
         ('confirmed', 'Підтверджено'),  # замовлення підтверджено менеджером
-        ('completed', 'Виконано'),      # замовлення виконано / доставлено
+        ('completed', 'Виконано'),  # замовлення виконано / доставлено
     ]
 
     @property
@@ -53,8 +65,9 @@ class Order(models.Model):
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
-        default='cart'   # замовлення початково у кошику
+        default='cart'  # замовлення початково у кошику
     )
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
@@ -63,12 +76,14 @@ class OrderItem(models.Model):
 
     @property
     def total_price(self):
-        return sum(item.total_price for item in self.items.all())
+        # ціна одного інструмента * кількість
+        return self.instrument.price * self.quantity
 
 
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
+    avatar = models.ImageField(upload_to='profiles/', blank=True, null=True)
 
-
-
-
-
-
+    def __str__(self):
+        return f"Профіль: {self.user.username}"
