@@ -1,37 +1,58 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4">Категорії інструментів</h2>
-    <div class="row">
+<div class="container py-5">
+    <header class="section-header mb-5">
+        <h2 class="display-5 fw-bold">Категорії інструментів</h2>
+        <div class="header-line"></div>
+    </header>
+
+    <div class="instrument-grid">
         {% for category in categories %}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <!-- Посилання на всю категорію -->
-                <h5 class="card-title">
-                    <a href="{% url 'instrument_shop:category_instruments' category.slug %}">
+        <div class="instrument-card p-4">
+            <div class="card-details h-100 d-flex flex-column">
+                <h3 class="instrument-title mb-3">
+                    <a href="{% url 'instrument_shop:category_instruments' category.slug %}" class="text-decoration-none text-dark hover-primary">
                         {{ category.title }}
                     </a>
-                </h5>
+                </h3>
 
-                <ul class="list-unstyled">
+                <ul class="list-unstyled mb-4 flex-grow-1">
                     {% for sub in category.subcategory_set.all %}
-                    <li>
-                        <!-- Посилання на підкатегорію -->
-                        <a href="{% url 'instrument_shop:subcategory_instruments' sub.slug %}" class="text-decoration-none text-muted">
-                            — {{ sub.title }}
+                    <li class="mb-2">
+                        <a href="{% url 'instrument_shop:subcategory_instruments' sub.slug %}" class="category-tag text-decoration-none d-block py-1">
+                            <span class="text-primary me-1">•</span> {{ sub.title }}
                         </a>
                     </li>
                     {% endfor %}
                 </ul>
-                </div>
-                <div class="card-footer bg-white border-0">
-                    <a href="#" class="btn btn-outline-dark btn-sm w-100">Дивитися все</a>
+
+                <div class="mt-auto">
+                    <a href="{% url 'instrument_shop:category_instruments' category.slug %}" class="btn-modern">
+                        <span>Дивитися все</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
 </div>
+
+<style>
+    /* Додатковий стиль для посилань у списку */
+    .hover-primary:hover {
+        color: var(--primary) !important;
+        transition: color 0.3s ease;
+    }
+
+    /* Ефект при наведенні на підкатегорію */
+    .category-tag:hover {
+        padding-left: 5px;
+        color: var(--dark);
+        transition: all 0.2s ease;
+    }
+</style>
 {% endblock %}

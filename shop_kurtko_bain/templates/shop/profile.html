@@ -1,21 +1,101 @@
-
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="container py-5">
+    <header class="section-header mb-5">
+        <h2 class="display-5 fw-bold">Особистий кабінет</h2>
+        <div class="header-line"></div>
+    </header>
 
-<h2>Мій уставший профіль</h2>
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="instrument-card p-4 h-100 shadow-sm border-0">
+                <div class="text-center mb-4">
+                    <div class="profile-avatar mb-3">
+                        <span class="avatar-letter">{{ client.first_name|first|upper }}</span>
+                    </div>
+                    <h3 class="instrument-title mb-1">{{ client.first_name }} {{ client.last_name }}</h3>
+                    <p class="stock-tag in-stock d-inline-block">Клієнт</p>
+                </div>
 
-<p>Ім'я: {{ client.first_name }}</p>
-<p>Прізвище: {{ client.last_name }}</p>
-<p>Email: {{ client.email }}</p>
-<p>Телефон: {{ client.phone }}</p>
+                <div class="profile-info-list mt-4">
+                    <div class="info-item mb-3">
+                        <label class="category-tag d-block">Email</label>
+                        <span class="fw-bold">{{ client.email }}</span>
+                    </div>
+                    <div class="info-item mb-3">
+                        <label class="category-tag d-block">Телефон</label>
+                        <span class="fw-bold">{{ client.phone }}</span>
+                    </div>
+                </div>
 
-<h3>Мої замовлення</h3>
+                <div class="mt-4 pt-3 border-top">
+                    <a href="{% url 'instrument_shop:profile_edit' %}" class="btn-modern bg-light text-dark w-100 py-2">
+                        <span>Редагувати профіль</span>
+                    </a>
+                </div>
+            </div>
+        </div>
 
-{% for order in orders %}
-    <p>
-        Замовлення №{{ order.id }} —
-        статус: {{ order.get_status_display }}
-    </p>
-{% endfor %}
+        <div class="col-lg-8">
+            <div class="instrument-card p-4 h-100 shadow-sm border-0">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="instrument-title mb-0">Історія замовлень</h3>
+                    <a href="{% url 'instrument_shop:order_list' %}" class="category-tag text-decoration-none">Дивитися всі →</a>
+                </div>
+
+                <div class="order-list-mini">
+                    {% for order in orders %}
+                        <div class="order-mini-item d-flex justify-content-between align-items-center p-3 mb-3 rounded-4 bg-light border">
+                            <div>
+                                <span class="fw-bold d-block">Замовлення №{{ order.id }}</span>
+                                <span class="small text-muted">{{ order.created_at|date:"d.m.Y" }}</span>
+                            </div>
+                            <div class="text-end">
+                                <span class="stock-tag {% if order.status == 'completed' %}in-stock{% else %}status-pending{% endif %} d-block mb-1">
+                                    {{ order.get_status_display }}
+                                </span>
+                                <span class="price-value" style="font-size: 1rem;">{{ order.total_price }} грн</span>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="text-center py-5">
+                            <p class="text-muted">У вас ще немає замовлень.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Аватарка с первой буквой имени */
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+        background: var(--primary);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        font-size: 2rem;
+        font-weight: 700;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .order-mini-item {
+        transition: transform 0.2s ease;
+    }
+
+    .order-mini-item:hover {
+        transform: scale(1.01);
+        background-color: #fff !important;
+        box-shadow: var(--shadow);
+    }
+
+    .status-pending { background: #fef9c3; color: #854d0e; }
+</style>
 {% endblock %}

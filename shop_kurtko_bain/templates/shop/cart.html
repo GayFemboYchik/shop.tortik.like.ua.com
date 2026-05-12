@@ -2,47 +2,119 @@
 {% load custom_filters %}
 
 {% block content %}
-<h2>Ваш кошик</h2>
+<div class="container py-5">
+    <header class="section-header mb-5">
+        <h2 class="display-5 fw-bold">Ваш кошик</h2>
+        <div class="header-line"></div>
+    </header>
 
-{% if items %}
-<table>
-    <tr>
-        <th>Товар</th>
-        <th>Ціна</th>
-        <th>Кількість</th>
-        <th>Сума</th>
-        <th>Дії</th>
-    </tr>
-    {% for item in items %}
-    <tr>
-        <td>{{ item.instrument.title }}</td>
-        <td>{{ item.instrument.price }}</td>
-        <td>
-            <form method="post" style="display:inline">
-                {% csrf_token %}
-                <input type="hidden" name="item_id" value="{{ item.id }}">
-                <input type="number" name="quantity" value="{{ item.quantity }}" min="1">
-                <button type="submit" name="action" value="update">Оновити</button>
-            </form>
-        </td>
-        <td>{{ item.instrument.price|multiply:item.quantity }}</td>
-        <td>
-            <form method="post" style="display:inline">
-                {% csrf_token %}
-                <input type="hidden" name="item_id" value="{{ item.id }}">
-                <button type="submit" name="action" value="delete">Видалити</button>
-            </form>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+    {% if items %}
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="cart-items-container">
+                {% for item in items %}
+                <div class="instrument-card p-4 mb-3 d-flex flex-column flex-md-row align-items-center">
+                    <div class="cart-img-wrapper me-md-4 mb-3 mb-md-0">
+                        {% if item.instrument.image %}
+                            <img src="{{ item.instrument.image.url }}" alt="{{ item.instrument.title }}" class="img-fluid rounded-3">
+                        {% else %}
+                            <div class="no-photo-placeholder-sm">📸</div>
+                        {% endif %}
+                    </div>
 
-<form action="{% url 'instrument_shop:checkout' %}" method="post">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-success">Оформити замовлення</button>
-</form>
+                    <div class="flex-grow-1 text-center text-md-start">
+                        <h4 class="instrument-title mb-1">{{ item.instrument.title }}</h4>
+                        <p class="category-tag mb-2">{{ item.instrument.price }} грн / шт.</p>
 
-{% else %}
-<p>Кошик порожній</p>
-{% endif %}
- {% endblock %}
+                        <form method="post" class="d-flex align-items-center justify-content-center justify-content-md-start gap-2">
+                            {% csrf_token %}
+                            <input type="hidden" name="item_id" value="{{ item.id }}">
+                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="form-control form-control-sm border-2 rounded-3" style="width: 70px;">
+                            <button type="submit" name="action" value="update" class="btn btn-sm btn-outline-primary rounded-3">
+                                Оновити
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="text-center text-md-end ms-md-4 mt-3 mt-md-0">
+                        <div class="price-section mb-2">
+                            <span class="price-value">{{ item.instrument.price|multiply:item.quantity }}</span>
+                            <span class="currency">грн</span>
+                        </div>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="item_id" value="{{ item.id }}">
+                            <button type="submit" name="action" value="delete" class="btn btn-link text-danger p-0 text-decoration-none small">
+                                <svg width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+                                </svg> Видалити
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="instrument-card p-4 sticky-top" style="top: 20px;">
+                <h3 class="instrument-title mb-4">Підсумок</h3>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted">Товарів:</span>
+                    <span class="fw-bold">{{ items|length }}</span>
+                </div>
+                <hr class="border-gray-200">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <span class="h5 mb-0">Всього:</span>
+                    <div class="price-section mb-0">
+                        <span class="price-value text-primary">
+                            {% block total_sum %}{% endblock %}
+                        </span>
+                        <span class="currency">грн</span>
+                    </div>
+                </div>
+                <form action="{% url 'instrument_shop:checkout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-modern w-100 border-0">
+                        <span>Оформити замовлення</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <div class="text-center py-5">
+        <div class="mb-4" style="font-size: 4rem;">🛒</div>
+        <h3 class="instrument-title">Кошик порожній</h3>
+        <p class="text-muted mb-4">Схоже, ви ще нічого не обрали.</p>
+        <a href="{% url 'instrument_shop:index' %}" class="btn-modern d-inline-flex">
+            <span>Перейти до покупок</span>
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .cart-img-wrapper {
+        width: 100px;
+        height: 100px;
+        flex-shrink: 0;
+    }
+    .cart-img-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    .no-photo-placeholder-sm {
+        width: 100%;
+        height: 100%;
+        background: var(--gray-bg);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+</style>
+{% endblock %}

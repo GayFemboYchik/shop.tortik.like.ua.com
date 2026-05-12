@@ -15,10 +15,12 @@ urlpatterns = [
     path("logout/", CustomLogoutView.as_view(), name="logout"),
     path("register/", RegisterView.as_view(), name="register"),
     path('profile/', ProfileView.as_view(), name='profile'),
+    path('profile/edit/', ProfileEditView.as_view(), name='profile_edit'),
     path('', IndexView.as_view(), name='index'),
     path('checkout/', CheckoutView.as_view(), name='checkout'),
     path('categories/', CategoryListView.as_view(), name='category_list'),
     path('my-orders/', OrderListView.as_view(), name='order_list'),
+
 ]
 
 app_name = "instrument_shop"

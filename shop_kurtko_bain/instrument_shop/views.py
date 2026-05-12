@@ -185,3 +185,21 @@ class OrderListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         # Повертаємо замовлення поточного користувача, які вже в обробці або виконані
         return Order.objects.filter(client=self.request.user).exclude(status='cart').order_by('-created_at')
+
+
+
+from .forms import UserEditForm
+
+class ProfileEditView(LoginRequiredMixin, View):
+    template_name = 'shop/profile_edit.html'
+
+    def get(self, request):
+        form = UserEditForm(instance=request.user)
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = UserEditForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('instrument_shop:profile')
+        return render(request, self.template_name, {'form': form})

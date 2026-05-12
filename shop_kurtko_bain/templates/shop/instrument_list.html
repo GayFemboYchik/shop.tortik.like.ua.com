@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container mt-4">
-    <h2 class="mb-4 text-center">{{ current_title }}</h2>
+<div class="container py-5">
+    <header class="section-header mb-5">
+        <h2 class="display-5 fw-bold">{{ current_title }}</h2>
+        <div class="header-line"></div>
+    </header>
 
     <div class="instrument-grid">
         {% for instrument in instruments %}
@@ -10,28 +13,39 @@
                     {% if instrument.image %}
                         <img src="{{ instrument.image.url }}" alt="{{ instrument.title }}">
                     {% else %}
-                        <img src="/static/images/no-photo.png" alt="Немає фото" class="no-photo">
+                        <div class="no-photo-placeholder">
+                            <i class="bi bi-image"></i>
+                            <span>Немає фото</span>
+                        </div>
                     {% endif %}
+                    <div class="card-badge">
+                        {% if instrument.in_stock > 0 %}
+                            <span class="stock-tag in-stock">В наявності</span>
+                        {% else %}
+                            <span class="stock-tag out-of-stock">Під замовлення</span>
+                        {% endif %}
+                    </div>
                 </div>
 
                 <div class="card-details">
-                    <h3>{{ instrument.title }}</h3>
-                    <p class="category">{{ instrument.subcategory.category.title }} / {{ instrument.subcategory.title }}</p>
-                    <p class="price">{{ instrument.price }} грн</p>
+                    <p class="category-tag">{{ instrument.subcategory.category.title }} • {{ instrument.subcategory.title }}</p>
+                    <h3 class="instrument-title">{{ instrument.title }}</h3>
 
-                    <div class="status-box">
-                        {% if instrument.in_stock > 0 %}
-                            <span class="badge bg-success">В наявності ({{ instrument.in_stock }})</span>
-                        {% else %}
-                            <span class="badge bg-danger">Немає в наявності</span>
-                        {% endif %}
+                    <div class="price-section">
+                        <span class="price-value">{{ instrument.price }}</span>
+                        <span class="currency">грн</span>
                     </div>
 
-                    <a href="{% url 'instrument_shop:instrument_detail' instrument.slug %}" class="btn-view">Переглянути</a>
+                    <a href="{% url 'instrument_shop:instrument_detail' instrument.slug %}" class="btn-modern">
+                        <span>Переглянути</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
                 </div>
             </div>
         {% empty %}
-            <p class="text-center">Наразі немає товарів у цій категорії.</p>
+            <div class="empty-state">
+                <p>Наразі товарів немає. Зазирніть пізніше!</p>
+            </div>
         {% endfor %}
     </div>
 </div>

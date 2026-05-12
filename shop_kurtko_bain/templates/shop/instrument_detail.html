@@ -1,33 +1,97 @@
-<!-- shop/instrument_detail.html -->
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="instrument-detail">
-    <h1>{{ instrument.title }}</h1>
-
-    {% if instrument.image %}
-    <div class="instrument-image">
-        <img src="{{ instrument.image.url }}" alt="{{ instrument.title }}" style="max-width: 400px;">
+<div class="container py-5">
+    <div class="mb-4">
+        <a href="{% url 'instrument_shop:instrument_list' %}" class="category-tag text-decoration-none d-inline-flex align-items-center gap-2">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Назад до каталогу
+        </a>
     </div>
-    {% endif %}
 
-    <p><strong>Категорія:</strong> {{ instrument.subcategory.category.title }}</p>
-    <p><strong>Підкатегорія:</strong> {{ instrument.subcategory.title }}</p>
-    <p><strong>Ціна:</strong> {{ instrument.price }} грн</p>
-    <p><strong>На складі:</strong> {{ instrument.in_stock }}</p>
-    <p><strong>Опис:</strong> {{ instrument.description }}</p>
+    <div class="instrument-card p-4 p-md-5">
+        <div class="row g-5">
+            <div class="col-lg-6">
+                <div class="image-wrapper shadow-sm rounded-4" style="height: 450px; background: #fff;">
+                    {% if instrument.image %}
+                        <img src="{{ instrument.image.url }}" alt="{{ instrument.title }}" class="img-fluid" style="max-height: 100%; object-fit: contain;">
+                    {% else %}
+                        <div class="no-photo-placeholder" style="font-size: 4rem;">🎸</div>
+                    {% endif %}
+                </div>
+            </div>
 
-    {% if user.is_authenticated %}
-    <form method="post" action="">
-        {% csrf_token %}
-        <label for="quantity">Кількість:</label>
-        <input type="number" name="quantity" id="quantity" value="1" min="1" max="{{ instrument.in_stock }}">
-        <button type="submit">Додати в кошик</button>
-    </form>
-    {% else %}
-    <p>Будь ласка, <a href="{% url 'instrument_shop:login' %}">увійдіть</a>, щоб додати товар у кошик.</p>
-    {% endif %}
+            <div class="col-lg-6 d-flex flex-column">
+                <div class="mb-2">
+                    <span class="category-tag">{{ instrument.subcategory.category.title }} • {{ instrument.subcategory.title }}</span>
+                </div>
+
+                <h1 class="display-5 fw-bold mb-3" style="color: var(--dark);">{{ instrument.title }}</h1>
+
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="price-section mb-0">
+                        <span class="price-value" style="font-size: 2.5rem;">{{ instrument.price }}</span>
+                        <span class="currency">грн</span>
+                    </div>
+
+                    <span class="stock-tag {% if instrument.in_stock > 0 %}in-stock{% else %}out-of-stock{% endif %}">
+                        {% if instrument.in_stock > 0 %}В наявності ({{ instrument.in_stock }}){% else %}Під замовлення{% endif %}
+                    </span>
+                </div>
+
+                <div class="description-box mb-5 p-4 rounded-4" style="background: var(--gray-bg); border-left: 4px solid var(--primary);">
+                    <h5 class="fw-bold mb-2">Опис товару</h5>
+                    <p class="text-muted leading-relaxed mb-0">{{ instrument.description|linebreaks }}</p>
+                </div>
+
+                <div class="mt-auto">
+                    {% if user.is_authenticated %}
+                        <form method="post" action="" class="p-4 border rounded-4 shadow-sm bg-white">
+                            {% csrf_token %}
+                            <div class="row g-3 align-items-end">
+                                <div class="col-md-4">
+                                    <label for="quantity" class="form-label small fw-bold text-muted text-uppercase">Кількість</label>
+                                    <input type="number" name="quantity" id="quantity" value="1" min="1" max="{{ instrument.in_stock }}"
+                                           class="form-control form-control-lg border-2 rounded-3">
+                                </div>
+                                <div class="col-md-8">
+                                    <button type="submit" class="btn-modern w-100 py-3 border-0">
+                                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" class="me-2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4H6zM3 6h18M16 10a4 4 0 01-8 0"></path></svg>
+                                        Додати в кошик
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    {% else %}
+                        <div class="alert alert-light border rounded-4 p-4 text-center">
+                            <p class="mb-3 text-muted">Хочете придбати цей інструмент?</p>
+                            <a href="{% url 'instrument_shop:login' %}" class="btn-modern d-inline-flex px-5 border-0">
+                                <span>Увійти для покупки</span>
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<a href="{% url 'instrument_shop:instrument_list' %}">← Повернутися до списку інструментів</a>
+<style>
+    /* Убедитесь, что переменная --primary определена в styles.css */
+    :root {
+        --primary: #2563eb;
+        --dark: #0f172a;
+        --gray-bg: #f8fafc;
+    }
+
+    .description-box p {
+        font-size: 1.05rem;
+        line-height: 1.6;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+</style>
 {% endblock %}
