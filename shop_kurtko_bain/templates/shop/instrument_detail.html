@@ -12,11 +12,39 @@
     <div class="instrument-card p-4 p-md-5">
         <div class="row g-5">
             <div class="col-lg-6">
-                <div class="image-wrapper shadow-sm rounded-4" style="height: 450px; background: #fff;">
+                <div class="image-wrapper shadow-sm rounded-4 mb-4" style="height: 450px; background: #fff;">
                     {% if instrument.image %}
                         <img src="{{ instrument.image.url }}" alt="{{ instrument.title }}" class="img-fluid" style="max-height: 100%; object-fit: contain;">
                     {% else %}
                         <div class="no-photo-placeholder" style="font-size: 4rem;">🎸</div>
+                    {% endif %}
+                </div>
+
+                <div class="cart-action-box">
+                    {% if user.is_authenticated %}
+                        <form method="post" action="" class="p-4 border rounded-4 shadow-sm bg-white">
+                            {% csrf_token %}
+                            <div class="row g-3 align-items-end">
+                                <div class="col-md-4">
+                                    <label for="quantity" class="form-label small fw-bold text-muted text-uppercase">Кількість</label>
+                                    <input type="number" name="quantity" id="quantity" value="1" min="1" max="{{ instrument.in_stock }}"
+                                           class="form-control form-control-lg border-2 rounded-3">
+                                </div>
+                                <div class="col-md-8">
+                                    <button type="submit" class="btn-modern w-100 py-3 border-0">
+                                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" class="me-2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4H6zM3 6h18M16 10a4 4 0 01-8 0"></path></svg>
+                                        Додати в кошик
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    {% else %}
+                        <div class="alert alert-light border rounded-4 p-4 text-center mb-0">
+                            <p class="mb-3 text-muted">Хочете придбати цей інструмент?</p>
+                            <a href="{% url 'instrument_shop:login' %}" class="btn-modern d-inline-flex px-5 border-0">
+                                <span>Увійти для покупки</span>
+                            </a>
+                        </div>
                     {% endif %}
                 </div>
             </div>
@@ -39,37 +67,18 @@
                     </span>
                 </div>
 
-                <div class="description-box mb-5 p-4 rounded-4" style="background: var(--gray-bg); border-left: 4px solid var(--primary);">
-                    <h5 class="fw-bold mb-2">Опис товару</h5>
-                    <p class="text-muted leading-relaxed mb-0">{{ instrument.description|linebreaks }}</p>
-                </div>
+                <div class="description-box mb-4 p-4 rounded-4" style="background: var(--gray-bg); border-left: 4px solid var(--primary);">
+                    <h5 class="fw-bold mb-2" style="color: var(--dark);">Опис товару</h5>
+                    <div id="description-content" class="text-muted leading-relaxed" data-full-text="{{ instrument.description|striptags }}">
+                        {{ instrument.description|linebreaks }}
+                    </div>
 
-                <div class="mt-auto">
-                    {% if user.is_authenticated %}
-                        <form method="post" action="" class="p-4 border rounded-4 shadow-sm bg-white">
-                            {% csrf_token %}
-                            <div class="row g-3 align-items-end">
-                                <div class="col-md-4">
-                                    <label for="quantity" class="form-label small fw-bold text-muted text-uppercase">Кількість</label>
-                                    <input type="number" name="quantity" id="quantity" value="1" min="1" max="{{ instrument.in_stock }}"
-                                           class="form-control form-control-lg border-2 rounded-3">
-                                </div>
-                                <div class="col-md-8">
-                                    <button type="submit" class="btn-modern w-100 py-3 border-0">
-                                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" class="me-2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4H6zM3 6h18M16 10a4 4 0 01-8 0"></path></svg>
-                                        Додати в кошик
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    {% else %}
-                        <div class="alert alert-light border rounded-4 p-4 text-center">
-                            <p class="mb-3 text-muted">Хочете придбати цей інструмент?</p>
-                            <a href="{% url 'instrument_shop:login' %}" class="btn-modern d-inline-flex px-5 border-0">
-                                <span>Увійти для покупки</span>
-                            </a>
-                        </div>
-                    {% endif %}
+                    <a href="#" id="toggle-desc-btn" class="mt-3 text-decoration-none fw-semibold d-inline-flex align-items-center gap-2" style="color: var(--primary); font-size: 0.95rem; display: none; transition: all 0.2s ease;">
+                        <span class="btn-text">Читати далі</span>
+                        <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.3s ease;">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </a>
                 </div>
             </div>
         </div>
@@ -77,7 +86,6 @@
 </div>
 
 <style>
-    /* Убедитесь, что переменная --primary определена в styles.css */
     :root {
         --primary: #2563eb;
         --dark: #0f172a;
@@ -87,11 +95,61 @@
     .description-box p {
         font-size: 1.05rem;
         line-height: 1.6;
+        margin-bottom: 0;
     }
 
     .form-control:focus {
         border-color: var(--primary);
         box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
     }
+
+    /* Стиль для плавного переходу кнопки */
+    #toggle-desc-btn:hover {
+        opacity: 0.8;
+    }
 </style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const descContainer = document.getElementById("description-content");
+    const toggleBtn = document.getElementById("toggle-desc-btn");
+
+    if (!descContainer || !toggleBtn) return;
+
+    const btnText = toggleBtn.querySelector(".btn-text");
+    const arrowIcon = toggleBtn.querySelector(".arrow-icon");
+    const fullText = descContainer.getAttribute("data-full-text").trim();
+    const maxLength = 150; // Поріг символів
+
+    if (fullText.length > maxLength) {
+        const originalHTML = descContainer.innerHTML;
+        const shortenedText = fullText.substring(0, maxLength) + "...";
+
+        // Початковий стан — текст обрізаний
+        descContainer.innerText = shortenedText;
+        toggleBtn.style.setProperty("display", "inline-flex", "important");
+
+        let isExpanded = false;
+
+        toggleBtn.addEventListener("click", function (e) {
+            e.preventDefault(); // Щоб сторінка не стрибала вгору при кліку на посилання
+
+            if (isExpanded) {
+                descContainer.innerText = shortenedText;
+                btnText.innerText = "Читати далі";
+                arrowIcon.style.transform = "rotate(0deg)"; // Стрілка вниз
+            } else {
+                descContainer.innerHTML = originalHTML;
+                btnText.innerText = "Згорнути";
+                arrowIcon.style.transform = "rotate(180deg)"; // Стрілка вгору
+            }
+            isExpanded = !isExpanded;
+        });
+
+        // Ефект підсвічування при наведенні
+        toggleBtn.addEventListener("mouseenter", () => toggleBtn.style.opacity = "0.8");
+        toggleBtn.addEventListener("mouseleave", () => toggleBtn.style.opacity = "1");
+    }
+});
+</script>
 {% endblock %}

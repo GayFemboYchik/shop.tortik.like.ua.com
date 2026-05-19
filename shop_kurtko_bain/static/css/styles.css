@@ -1,206 +1,86 @@
-/* Сітка для карток */
-.instrument-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 25px;
-    padding: 20px 0;
-}
-
-/* Сама картка */
-.instrument-card {
-    background: #fff;
-    border: 1px solid #eee;
-    border-radius: 12px;
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    height: 100%; /* Щоб усі картки в рядку були однієї висоти */
-}
-
-.instrument-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-}
-
-/* Контейнер для картинки — ТУТ ГОЛОВНА МАГІЯ */
-.image-wrapper {
-    width: 100%;
-    height: 200px; /* Фіксована висота для всіх фото */
-    overflow: hidden;
-    background-color: #f8f9fa;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.image-wrapper img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain; /* Картинка впишеться в рамки без спотворень */
-    padding: 10px;       /* Невеликий відступ, щоб фото не торкалося країв */
-}
-
-/* Деталі тексту */
-.card-details {
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    text-align: center;
-}
-
-.card-details h3 {
-    font-size: 1.1rem;
-    margin-bottom: 8px;
-    color: #333;
-    height: 2.4em; /* Обмеження висоти заголовка (на 2 рядки) */
-    overflow: hidden;
-}
-
-.price {
-    font-size: 1.25rem;
-    font-weight: bold;
-    color: #e67e22;
-    margin: 10px 0;
-}
-
-.category {
-    font-size: 0.85rem;
-    color: #7f8c8d;
-}
-
-/* Кнопка */
-.btn-view {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    background-color: #2c3e50;
-    color: white;
-    text-decoration: none;
-    border-radius: 6px;
-    margin-top: auto; /* Притискає кнопку до низу картки */
-    transition: background 0.2s;
-}
-
-.btn-view:hover {
-    background-color: #34495e;
-    color: #fff;
-}
-
-
-
-
-/* Налаштування шрифтів та фону */
-/* 1. Оновлюємо базові змінні та фон тіла сторінки */
+/* ==========================================================================
+   1. БАЗОВІ НАЛАШТУВАННЯ ТА ПРИЄМНА ПАЛІТРА (EMERALD & MINT)
+   ========================================================================== */
 :root {
-    --primary: #2563eb;
-    --primary-light: #dbeafe;
-    --dark: #0f172a;
-    --text-muted: #64748b;
-    --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    --glass-bg: rgba(255, 255, 255, 0.8);
-    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    --primary: #0f766e;        /* Глибокий смарагдовий (Teal / Emerald) */
+    --primary-light: #ccfbf1;  /* Ніжна пастельна м'ята */
+    --dark: #0f172a;           /* Стильний темний графіт для тексту */
+    --text-muted: #64748b;     /* Спокійний сірий для другорядного тексту */
+
+    /* Сучасний легкий градієнт для фону */
+    --bg-gradient: linear-gradient(135deg, #f0fdfa 0%, #e2e8f0 100%);
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --shadow: 0 10px 25px -5px rgba(15, 118, 110, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    --shadow-hover: 0 20px 25px -5px rgba(15, 118, 110, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 body {
-    /* Гарний градієнтний фон, який фіксується при скролі */
     background: var(--bg-gradient);
     background-attachment: fixed;
     min-height: 100vh;
     font-family: 'Inter', sans-serif;
     color: var(--dark);
+    padding-top: 90px; /* Відступ зверху під нову шапку сайту */
 }
 
-/* 2. Додаємо ефект розмиття фону для карток (Glassmorphism) */
-.instrument-card, .card {
-    background: var(--glass-bg) !important;
-    backdrop-filter: blur(10px); /* Ефект матового скла */
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.5) !important;
-    box-shadow: var(--shadow);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* 3. Декоративні елементи на фоні (опціонально) */
-body::before {
+/* Декоративні розмиті кола на фоні */
+body::before, body::after {
     content: "";
     position: fixed;
+    z-index: -1;
+    background: radial-gradient(circle, rgba(15, 118, 110, 0.06) 0%, transparent 70%);
+}
+body::before {
     top: -10%;
     right: -10%;
     width: 400px;
     height: 400px;
-    background: radial-gradient(circle, rgba(37, 99, 235, 0.05) 0%, transparent 70%);
-    z-index: -1;
 }
-
 body::after {
-    content: "";
-    position: fixed;
     bottom: -10%;
     left: -10%;
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, rgba(37, 99, 235, 0.05) 0%, transparent 70%);
-    z-index: -1;
 }
 
-/* 4. Оновлюємо заголовок секцій для кращого контрасту */
-.section-header h2 {
-    position: relative;
-    z-index: 1;
-}
-
-.header-line {
-    height: 4px;
-    width: 60px;
-    background: var(--primary);
-    border-radius: 2px;
-    margin: 15px auto 0;
-}
-/* Заголовок секції */
-.section-header {
-    text-align: center;
-}
-.header-line {
-    width: 60px;
-    height: 4px;
-    background: var(--primary);
-    margin: 15px auto;
-    border-radius: 2px;
-}
-
-/* Сітка */
+/* ==========================================================================
+   2. СІТКА ТА СУЧАСНІ КАРТКИ ТОВАРІВ (GLASSMORPHISM)
+   ========================================================================== */
 .instrument-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 32px;
+    padding: 20px 0;
 }
 
-/* Картка */
 .instrument-card {
-    background: #ffffff;
-    border-radius: 24px; /* Більш закруглені кути */
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    border-radius: 24px;
     overflow: hidden;
-    border: 1px solid rgba(0,0,0,0.03);
+    box-shadow: var(--shadow);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
     position: relative;
+    height: 100%;
 }
 
 .instrument-card:hover {
     transform: translateY(-8px);
     box-shadow: var(--shadow-hover);
-    border-color: rgba(37, 99, 235, 0.1);
+    border-color: rgba(15, 118, 110, 0.15) !important;
 }
 
-/* Зображення */
+/* Контейнер для картинки інструменту */
 .image-wrapper {
     position: relative;
+    width: 100%;
     height: 240px;
     padding: 20px;
-    background: #fff;
+    background: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -218,11 +98,12 @@ body::after {
     transform: scale(1.05);
 }
 
-/* Теги (В наявності) */
+/* Абсолютні теги поверх картки (наприклад, "В наявності") */
 .card-badge {
     position: absolute;
     top: 15px;
     left: 15px;
+    z-index: 2;
 }
 
 .stock-tag {
@@ -236,9 +117,9 @@ body::after {
 .in-stock { background: #dcfce7; color: #166534; }
 .out-of-stock { background: #fee2e2; color: #991b1b; }
 
-/* Деталі */
+/* Блок з текстовими деталями всередині картки */
 .card-details {
-    padding: 0 24px 24px 24px;
+    padding: 24px;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -260,7 +141,6 @@ body::after {
     line-height: 1.3;
 }
 
-/* Ціна */
 .price-section {
     margin-bottom: 20px;
     display: flex;
@@ -280,7 +160,7 @@ body::after {
     font-weight: 500;
 }
 
-/* Кнопка */
+/* Головні кнопки дій */
 .btn-modern {
     display: flex;
     align-items: center;
@@ -289,7 +169,7 @@ body::after {
     width: 100%;
     padding: 12px;
     background: var(--dark);
-    color: #fff;
+    color: #ffffff;
     text-decoration: none;
     border-radius: 14px;
     font-weight: 600;
@@ -299,7 +179,126 @@ body::after {
 
 .btn-modern:hover {
     background: var(--primary);
-    color: #fff;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.25);
 }
 
+/* Заголовки сторінок та секцій */
+.section-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.section-header h2 {
+    position: relative;
+    z-index: 1;
+}
+
+.header-line {
+    width: 60px;
+    height: 4px;
+    background: var(--primary);
+    margin: 15px auto;
+    border-radius: 2px;
+}
+
+/* ==========================================================================
+   3. СУЧАСНЕ МЕНЮ (DARK EMERALD GLASS NAVBAR)
+   ========================================================================== */
+.modern-navbar {
+    background: rgba(15, 23, 42, 0.85) !important; /* Глибокий темний графіт */
+    backdrop-filter: blur(15px) !important;
+    -webkit-backdrop-filter: blur(15px) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
+    padding: 15px 0;
+    transition: all 0.3s ease;
+}
+
+.logo-text {
+    font-size: 1.35rem;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+}
+
+.logo-icon {
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.navbar-brand:hover .logo-icon {
+    transform: rotate(-15px) scale(1.1);
+}
+
+.nav-links-gap {
+    margin-left: 2rem;
+    gap: 10px;
+}
+
+.modern-nav-link {
+    color: #cbd5e1 !important; /* Світло-сірі посилання */
+    font-weight: 500;
+    font-size: 0.95rem;
+    position: relative;
+    padding: 8px 12px !important;
+    transition: color 0.2s ease;
+}
+
+.modern-nav-link:hover {
+    color: #2dd4bf !important; /* Ніжно-м'ятний ховер */
+}
+
+.modern-badge {
+    background: var(--primary) !important;
+    color: #ffffff !important;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 5px 8px !important;
+    border-radius: 8px !important;
+}
+
+.user-profile-link {
+    background: rgba(45, 212, 191, 0.12);
+    color: #2dd4bf !important;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.user-profile-link:hover {
+    background: rgba(45, 212, 191, 0.22);
+    transform: translateY(-1px);
+}
+
+.btn-logout {
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: transparent;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-logout:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+}
+
+.btn-modern-nav {
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: 0 4px 14px rgba(15, 118, 110, 0.25);
+    transition: all 0.2s ease;
+}
+
+.btn-modern-nav:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(15, 118, 110, 0.4);
+    opacity: 0.95;
+}
+
+.navbar-toggler {
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 8px;
+    border-radius: 10px;
+}
